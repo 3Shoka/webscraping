@@ -1,26 +1,25 @@
-import bs4
+from bs4 import BeautifulSoup
 import requests
+from flask import Flask, render_template
 
-url = 'https://jadwalsholat.pkpu.or.id/?id=233'
-content = requests.get(url)
-response = bs4.BeautifulSoup(content.text, "html.parser")
-data = response.find_all('tr', 'table_highlight')
-data = data[0]
+app = Flask(__name__)
 
-sholat = {}
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-i = 0
-for d in data:
-    if i == 1:
-        sholat['subuh'] = d.get_text()
-    elif i == 2:
-        sholat['dzuhur'] = d.get_text()
-    elif i == 3:
-        sholat['ashar'] = d.get_text()
-    elif i == 4:
-        sholat['maghrib'] = d.get_text()
-    elif i == 5:
-        sholat['isya'] = d.get_text()
-    i += 1
+@app.route('/detik-populer')
+def detik_populer():
+    url = 'https://www.detik.com/terpopuler'
+    content = requests.get(url)
 
-print(sholat)
+    soup = BeautifulSoup(content.text, 'html.parser')
+    populer = soup.find(attrs={'class': 'list-content'})
+
+    titles = populer.findAll(attrs={'class': 'media__title'})
+    images = populer.findAll(attrs={'class': 'media__image'})
+
+    return render_template('index.html', images=images)
+
+if __name__ == '__main__':
+    app.run(debug=True)
