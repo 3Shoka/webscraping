@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block body %}
+      <h2>Detik Populer</h2>
+      <hr>
+      {% for image in images %}
+        {{ image | safe }}
+        <a href="{{ image.find('a')['href'] | safe }}">{{ image.find('img')['alt'] }}</a>
+        <hr>
+      {% endfor %}
+{% endblock %}
